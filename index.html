@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAM Monitor - Core Root</title>
+    <style>
+        body { background-color: #08080a; color: #38bdf8; font-family: monospace; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .panel { width: 100%; max-width: 600px; background: #111116; border: 1px solid #262630; border-radius: 8px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        h1 { color: #a855f7; font-size: 1.2rem; text-transform: uppercase; border-bottom: 1px solid #262630; padding-bottom: 10px; margin-top: 0; }
+        .ram-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
+        .ram-block { height: 50px; background: #1f2937; border: 1px solid #374151; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 0.8rem; transition: background 0.3s; }
+        .ram-block.used { background: #991b1b; border-color: #ef4444; }
+        button { width: 100%; background: #1e1e24; color: #fff; border: 1px solid #262630; padding: 12px; cursor: pointer; font-family: inherit; font-weight: bold; border-radius: 4px; text-transform: uppercase; }
+        button:hover { border-color: #a855f7; color: #a855f7; }
+        .status { margin-top: 15px; font-size: 0.9rem; border-top: 1px dashed #262630; padding-top: 10px; color: #22c55e; }
+    </style>
+</head>
+<body>
+<div class="panel">
+    <h1>Simulador de Carga de Memoria Virtual RAM</h1>
+    <button id="btnSimular">Inyectar Procesos en RAM</button>
+    <div class="ram-container" id="ramContainer"></div>
+    <div class="status" id="txtStatus">Estado: Sistema estable. Buffer vacío.</div>
+</div>
+<script>
+    // @ts-nocheck
+    var container = document.getElementById('ramContainer');
+    var txtStatus = document.getElementById('txtStatus');
+    for(var i=0; i<16; i++) {
+        var block = document.createElement('div');
+        block.className = 'ram-block';
+        block.textContent = '0x' + i.toString(16).toUpperCase();
+        container.appendChild(block);
+    }
+    document.getElementById('btnSimular').addEventListener('click', function() {
+        var blocks = document.querySelectorAll('.ram-block');
+        var fallos = 0;
+        blocks.forEach(function(b) {
+            var comb = Math.random() > 0.4;
+            if(comb) { b.classList.add('used'); fallos++; } else { b.classList.remove('used'); }
+        });
+        if(fallos > 12) {
+            txtStatus.style.color = '#ef4444';
+            txtStatus.textContent = 'ALERTA: Saturación crítica detectada en el bus de datos.';
+        } else {
+            txtStatus.style.color = '#22c55e';
+            txtStatus.textContent = 'Sistema Estable. Uso de RAM: ' + Math.round((fallos/16)*100) + '%';
+        }
+    });
+</script>
+</body>
+</html>
